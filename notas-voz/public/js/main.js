@@ -48,16 +48,12 @@ function stopRecording() {
 }
 */
 
-import { recordFn } from "/js/recordButton.js";
+//import { recordFn } from "/js/recordButton.js";
 
-const liRecordButton = document.getElementById("liRecordButton");
-liRecordButton.innerHTML = recordFn();
+//const liRecordButton = document.getElementById("recordbtn");
+//liRecordButton.innerHTML = recordFn();
 
 class App {
-
-    audio;
-    blob;
-    state;
 
     constructor() {
         this.audio;
@@ -66,9 +62,9 @@ class App {
     }
     
     async init(){
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        this.initAudio();
-        this.initRecord(stream);
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      this.initAudio();
+      this.initRecord(stream);
     }
     
     initAudio(){
@@ -107,3 +103,7 @@ class App {
 
     }
 }
+
+const myApp = new App();
+
+myApp.init();
