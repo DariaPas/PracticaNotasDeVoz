@@ -6,3 +6,37 @@ body {
 a {
   color: #00B7FF;
 }
+
+button {
+  margin-top: 10px; 
+  padding: 25px 130px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  color: white;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+  background-color: #e74c3c;
+  width: 100%;
+}
+
+
+button:hover {
+  background-color: #fc8a8a; /* Pink color on hover */
+}
+
+.button-container {
+  display: flex;
+  gap: 10px;
+  flex-direction: column; /* Updated to display buttons in a column */
+  align-items: center;
+}
+
+.white-square {
+  background-color: #e5dddd; /* Blue color for the square */
+  padding: 30px;
+  border-radius: 20px;
+  text-align: center;
+  color: #e74c3c;
+  max-width: 400px;
+}
