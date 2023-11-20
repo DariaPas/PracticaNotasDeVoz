@@ -68,15 +68,29 @@ class App {
     }
     
     initAudio(){
-        let audio=new this.audio;
+        let audio=this.audio;
     }
     
     loadBlob() {
 
     }
     
-    initRecord(){
+    initRecord(stream){
+      let mediaRecorder=new MediaRecorder(stream);
 
+      mediaRecorder.ondataavailable=(e)=> {
+        //chunks.push(e.data);
+        audioChunks.push(e.data);
+      }
+
+      mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audioPlayer = document.getElementById('audioPlayer');
+        audioPlayer.src = audioUrl;
+
+        audioPlayer.loadBlob(audioBlob);
+      };
     }
     
     record(){
@@ -96,7 +110,23 @@ class App {
     }
 
     upload(){
-
+      this.setState({ uploading: true }); // estado actual: uploading
+      const body = new FormData(); // Mediante FormData podremos subir el audio al servidor
+      body.append("recording", this.blob); // en el atributo recording de formData guarda el audio para su posterior subida
+      fetch("/api/upload/" + this.uuid, {
+        method: "POST", // usaremos el método POST para subir el audio body,
+      })
+      .then((res) => res.json()) // el servidor, una vez recogido el audio, devolverá la lista de todos los ficheros a nombre del presente usuario (inlcuido el que se acaba de subir)
+      .then((json) => {
+        this.setState({
+          files: json.files, // todos los ficheros del usuario
+          uploading: false, // actualizar el estado actual
+          uploaded: true, // actualizar estado actual
+        });
+      })
+      .catch((err) => {
+        this.setState({ error: true });
+      });
     }
     
     deleteFile(){
