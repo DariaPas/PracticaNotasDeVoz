@@ -71,9 +71,6 @@ class App {
         let audio=this.audio;
     }
     
-    loadBlob() {
-
-    }
     
     initRecord(stream){
       let mediaRecorder=new MediaRecorder(stream);
