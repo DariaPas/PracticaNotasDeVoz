@@ -69,9 +69,13 @@ class App {
     
     initAudio(){
         let audio=this.audio;
+        audio.play();
     }
     
-    
+    loadBlob() {
+      
+    }
+
     initRecord(stream){
       let mediaRecorder=new MediaRecorder(stream);
 
