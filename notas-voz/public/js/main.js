@@ -61,7 +61,13 @@ class App {
           console.log(onended);
         }
 
-        document.getElementById('playbtn').addEventListener('click', () => this.playAudio());
+        document.getElementById('playbtn').addEventListener('click', () => {
+          if(this.audio.paused || this.audio.currentTime==0){
+            this.playAudio(); 
+          }else{
+            this.stopAudio();
+          }
+        });
     }
     
     loadBlob(audioBlob) {
@@ -92,9 +98,16 @@ class App {
         console.log("estoy aqui2")
       };
 
-      document.getElementById('recordbtn').addEventListener('click', () =>this.record());
       
-      document.getElementById('stop-btn').addEventListener('click', () => this.stopRecording())
+      document.getElementById('recordbtn').addEventListener('click', () => {
+        if(document.getElementById('recordbtn').textContent=="Record") {
+         this.record();
+        }
+        else {
+          this.stopRecording();
+        }
+      });
+
     }
     
     setState(state) {
@@ -104,26 +117,17 @@ class App {
 
     render() {
       if(this.mediaRecorder.state=='recording') {
-        document.getElementById('recordbtn').disabled=true;
-        document.getElementById('stop-btn').disabled=false;
         document.getElementById('playbtn').disabled=true;
       }
       else if(this.mediaRecorder.state=='paused') {
-        document.getElementById('recordbtn').disabled=false;
-        document.getElementById('stop-btn').disabled=true;
-        //document.getElementById('playbtn').disabled=false;
         if(this.audioChunks.length>0) {
           document.getElementById('playbtn').disabled=false;
         }
       }
       else if(this.mediaRecorder.state=='inactive') {
-        document.getElementById('recordbtn').disabled=false;
-        document.getElementById('stop-btn').disabled=true;
-        //document.getElementById('playbtn').disabled=false;
-        if(this.audioChunks.length>0) {
+        if(this.mediaRecorder.mimeType!='' || this.audioChunks.length>0) {
           document.getElementById('playbtn').disabled=false;
         }
-        console.log("estoy aqui")
       }
       /*else if(this.mediaRecorder.state=='playing') {
         document.getElementById('playbtn').textContent="Stop audio"
@@ -137,6 +141,7 @@ class App {
         console.log("grabando");
         console.log(this.mediaRecorder);
         this.setState('recording');
+        document.getElementById('recordbtn').textContent="Stop recording"
     }
     
     stopRecording(){
@@ -144,15 +149,18 @@ class App {
         console.log("parado");
         console.log(this.mediaRecorder);
         this.setState('inactive');
+        document.getElementById('recordbtn').textContent="Record";
     }
     
     playAudio(){
       this.audio.play();
      // this.setState('playing');
+     document.getElementById('playbtn').textContent="Stop audio"
     }
     
     stopAudio(){
-      this.audio.stop();
+      this.audio.pause();
+      document.getElementById('playbtn').textContent="Play audio"
     }
 
     upload(){
