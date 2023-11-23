@@ -6,6 +6,9 @@
 //let audioChunks = [];
 //let mediaRecorder;
 
+
+//import {v4 as uuidv4} from "./public/utils/uuid/v4.js";
+
 const create_button = (id) => {
   const button = document.createElement('button')
   const container = document.getElementById(id)
@@ -42,7 +45,7 @@ class App {
     }
 
     initButtons(){
-      create_button('dasha-code')
+      create_button('buttons')
     }
 
     initAudio(){
@@ -187,6 +190,7 @@ class App {
 
     }
 }
+
 
 const myApp = new App();
 
