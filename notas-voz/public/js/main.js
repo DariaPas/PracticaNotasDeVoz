@@ -5,7 +5,7 @@ document.getElementById('startPauseBtn').addEventListener('click', toggleRecordi
 document.getElementById('stopBtn').addEventListener('click', stopRecording);
 
 let mediaRecorder;
-let audioChunks = [];
+
 let isRecording = false;
 
 async function toggleRecording() {
@@ -53,7 +53,19 @@ function stopRecording() {
 //const liRecordButton = document.getElementById("recordbtn");
 //liRecordButton.innerHTML = recordFn();
 
+let audioChunks = [];
+
+const create_button = (id) => {
+  const button = document.createElement('button')
+  const container = document.getElementById(id)
+  button.innerHTML = 'Hello'
+
+
+  container.appendChild(button)
+}
+
 class App {
+
 
     constructor() {
         this.audio;
@@ -62,25 +74,41 @@ class App {
     }
     
     async init(){
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      this.initAudio();
-      this.initRecord(stream);
+      // Permissions to record audio 
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      this.recordLogic(stream)
+
     }
     
+    recordLogic( stream ) {
+       const record_button = document.getElementById('recordbtn')
+       record_button.addEventListener('click', () => {
+          this.initRecord(stream)
+       })
+    }
+
+    initButtons(){
+      create_button('dasha-code')
+    }
+
     initAudio(){
-        let audio=this.audio;
+        let audio = this.audio;
         audio.play();
     }
     
-    loadBlob() {
-      
+    loadBlob(audioBlob) {
+       const audioURL = URL.createObjectURL(audioBlob)
+       this.audio.src = audioURL
     }
 
     initRecord(stream){
-      let mediaRecorder=new MediaRecorder(stream);
+      let mediaRecorder= new MediaRecorder(stream);
+
+      console.log(stream)
+      console.log(mediaRecorder)
+
 
       mediaRecorder.ondataavailable=(e)=> {
-        //chunks.push(e.data);
         audioChunks.push(e.data);
       }
 
@@ -88,12 +116,17 @@ class App {
         const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
         const audioUrl = URL.createObjectURL(audioBlob);
         const audioPlayer = document.getElementById('audioPlayer');
-        audioPlayer.src = audioUrl;
-
-        audioPlayer.loadBlob(audioBlob);
+        audioPlayer.src = audioUrl
       };
+
+      mediaRecorder.start()
+
+
+      document.getElementById('stop-btn').addEventListener('click', () => mediaRecorder.stop())
     }
     
+
+
     record(){
 
     }
