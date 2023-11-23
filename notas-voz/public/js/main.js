@@ -1,59 +1,10 @@
-//codigo de la aplicacion
-/*
-document.getElementById('startPauseBtn').addEventListener('click', toggleRecording);
-
-document.getElementById('stopBtn').addEventListener('click', stopRecording);
-
-let mediaRecorder;
-
-let isRecording = false;
-
-async function toggleRecording() {
-  if (!isRecording) {
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorder = new MediaRecorder(stream);
-    mediaRecorder.ondataavailable = (event) => {
-      audioChunks.push(event.data);
-    };
-
-    mediaRecorder.onstop = () => {
-      const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-      const audioUrl = URL.createObjectURL(audioBlob);
-      const audioPlayer = document.getElementById('audioPlayer');
-      audioPlayer.src = audioUrl;
-    };
-
-    mediaRecorder.start();
-    isRecording = true;
-    document.getElementById('startPauseBtn').textContent = 'Pause Recording';
-    document.getElementById('stopBtn').disabled = false;
-  } else {
-    if (mediaRecorder.state === 'recording') {
-      mediaRecorder.pause();
-      document.getElementById('startPauseBtn').textContent = 'Resume Recording';
-    } else if (mediaRecorder.state === 'paused') {
-      mediaRecorder.resume();
-      document.getElementById('startPauseBtn').textContent = 'Pause Recording';
-    }
-  }
-}
-
-function stopRecording() {
-  if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-    mediaRecorder.stop();
-    document.getElementById('stopBtn').disabled = true;
-    document.getElementById('startPauseBtn').textContent = 'Start Recording';
-    isRecording = false;
-  }
-}
-*/
-
 //import { recordFn } from "/js/recordButton.js";
 
 //const liRecordButton = document.getElementById("recordbtn");
 //liRecordButton.innerHTML = recordFn();
 
-let audioChunks = [];
+//let audioChunks = [];
+//let mediaRecorder;
 
 const create_button = (id) => {
   const button = document.createElement('button')
@@ -71,13 +22,16 @@ class App {
         this.audio;
         this.blob;
         this.state;
+        this.mediaRecorder;
+        this.audioChunks = [];
     }
     
     async init(){
       // Permissions to record audio 
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      this.recordLogic(stream)
-
+      //this.recordLogic(stream)
+      this.initRecord(stream);
+      this.initAudio();
     }
     
     recordLogic( stream ) {
@@ -93,7 +47,21 @@ class App {
 
     initAudio(){
         let audio = this.audio;
-        audio.play();
+        
+        onloadedmetadata=(e)=> {
+          console.log(onloadedmetadata);
+        }
+        ondurationchange=(e)=> {
+          console.log(ondurationchange);
+        }
+        ontimeupdate=(e)=> {
+          console.log(ontimeupdate);
+        }
+        onended=(e)=> {
+          console.log(onended);
+        }
+
+        document.getElementById('playbtn').addEventListener('click', () => this.playAudio());
     }
     
     loadBlob(audioBlob) {
@@ -102,45 +70,89 @@ class App {
     }
 
     initRecord(stream){
-      let mediaRecorder= new MediaRecorder(stream);
+     this.mediaRecorder= new MediaRecorder(stream);
 
       console.log(stream)
-      console.log(mediaRecorder)
+      console.log(this.mediaRecorder)
 
 
-      mediaRecorder.ondataavailable=(e)=> {
-        audioChunks.push(e.data);
+      this.mediaRecorder.ondataavailable=(e)=> {
+        if(this.audioChunks.length>0) {
+          this.audioChunks.pop();
+        }
+        console.log("estoy aqui3")
+        this.audioChunks.push(e.data);
       }
 
-      mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+      this.mediaRecorder.onstop = () => {
+        const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
         const audioUrl = URL.createObjectURL(audioBlob);
-        const audioPlayer = document.getElementById('audioPlayer');
-        audioPlayer.src = audioUrl
+        this.audio= document.getElementById('audioPlayer');
+        this.audio.src = audioUrl;
+        console.log("estoy aqui2")
       };
 
-      mediaRecorder.start()
-
-
-      document.getElementById('stop-btn').addEventListener('click', () => mediaRecorder.stop())
+      document.getElementById('recordbtn').addEventListener('click', () =>this.record());
+      
+      document.getElementById('stop-btn').addEventListener('click', () => this.stopRecording())
     }
     
+    setState(state) {
+      this.state = Object.assign({}, this.state, state);
+      this.render();
+    }
 
+    render() {
+      if(this.mediaRecorder.state=='recording') {
+        document.getElementById('recordbtn').disabled=true;
+        document.getElementById('stop-btn').disabled=false;
+        document.getElementById('playbtn').disabled=true;
+      }
+      else if(this.mediaRecorder.state=='paused') {
+        document.getElementById('recordbtn').disabled=false;
+        document.getElementById('stop-btn').disabled=true;
+        //document.getElementById('playbtn').disabled=false;
+        if(this.audioChunks.length>0) {
+          document.getElementById('playbtn').disabled=false;
+        }
+      }
+      else if(this.mediaRecorder.state=='inactive') {
+        document.getElementById('recordbtn').disabled=false;
+        document.getElementById('stop-btn').disabled=true;
+        //document.getElementById('playbtn').disabled=false;
+        if(this.audioChunks.length>0) {
+          document.getElementById('playbtn').disabled=false;
+        }
+        console.log("estoy aqui")
+      }
+      /*else if(this.mediaRecorder.state=='playing') {
+        document.getElementById('playbtn').textContent="Stop audio"
+        this.setState(this.audio.ontimeupdate);
+      }*/
+    }
 
     record(){
-
+       
+        this.mediaRecorder.start();
+        console.log("grabando");
+        console.log(this.mediaRecorder);
+        this.setState('recording');
     }
     
     stopRecording(){
-
+        this.mediaRecorder.stop();
+        console.log("parado");
+        console.log(this.mediaRecorder);
+        this.setState('inactive');
     }
     
     playAudio(){
-
+      this.audio.play();
+     // this.setState('playing');
     }
     
     stopAudio(){
-
+      this.audio.stop();
     }
 
     upload(){
@@ -171,3 +183,10 @@ class App {
 const myApp = new App();
 
 myApp.init();
+
+//document.getElementById('recordbtn').addEventListener('click', () =>myApp.record());
+      
+//document.getElementById('stop-btn').addEventListener('click', () => myApp.stopRecording());
+
+//document.getElementById('playbtn').addEventListener('click', () => myApp.playAudio());
+//document.getElementById('recor')
