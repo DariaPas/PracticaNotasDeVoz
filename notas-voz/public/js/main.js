@@ -7,7 +7,8 @@
 //let mediaRecorder;
 
 
-//import {v4 as uuidv4} from "./public/utils/uuid/v4.js";
+//import {v4 as uuidv4} from "./public/utils/uuid/v4.js";S
+
 const create_button = (id) => {
   const button = document.createElement('button')
   const container = document.getElementById(id)
@@ -212,10 +213,16 @@ class App {
                   let date = moment(file.date).calendar().toLocaleLowerCase()
 
                     const listItem = document.createElement('li');
-                    listItem.innerHTML = `<p>Filename: ${file.filename}</p>
+                    listItem.innerHTML = `
+                                      <div class="CopyButtonContainer">
+                                          <span class="copyButton">
+                                          <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copy" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg>
+                                          </span>
                                           <p>Date: ${date}</p>
-                                          <button class="copyButton">Copy</button>
-                                          <button class="deleteButton">Delete</button>`;
+                                          <span class="deleteButton">
+                                          <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+                                          </span>
+                                      </div>`;
                     filesContainer.appendChild(listItem);
 
                     // Add a click event listener to the 'copy' button
@@ -225,7 +232,8 @@ class App {
                       navigator.clipboard.writeText(file.filename)
                       .then(() => {
                           console.log('Text copied to clipboard:', file.filename);
-                          alert('Filename copied to clipboard: ' + file.filename);
+                          // alert('Filename copied to clipboard: ' + file.filename);
+                          Snackbar.show({pos: 'bottom-left', text: 'URL copied'});
                       })
                       .catch(err => {
                           console.error('Unable to copy text to clipboard:', err);
