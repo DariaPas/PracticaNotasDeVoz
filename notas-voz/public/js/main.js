@@ -8,7 +8,6 @@
 
 
 //import {v4 as uuidv4} from "./public/utils/uuid/v4.js";
-
 const create_button = (id) => {
   const button = document.createElement('button')
   const container = document.getElementById(id)
@@ -209,9 +208,12 @@ class App {
                 data.files.forEach(file => {
                   console.log(file);
 
+                  moment.locale('es');
+                  let date = moment(file.date).calendar().toLocaleLowerCase()
+
                     const listItem = document.createElement('li');
                     listItem.innerHTML = `<p>Filename: ${file.filename}</p>
-                                          <p>Date: ${new Date(file.date)}</p>
+                                          <p>Date: ${date}</p>
                                           <button class="copyButton">Copy</button>
                                           <button class="deleteButton">Delete</button>`;
                     filesContainer.appendChild(listItem);
