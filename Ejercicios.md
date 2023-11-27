@@ -1,12 +1,12 @@
 #Audio event listener
 
 ##onloadedmetadata
-*`Objetivo`:
-*`Posible uso`:
+*`Objetivo`: Ejecutar un JavaScript cuando se carga de metadatos de un vídeo
+*`Posible uso`: Lanzar aviso de que ya se han empezado a cargar los datos de un audio o video
 
 ##ondurationchange
 *`Objetivo`: Este evento se carga cuando se cambia la duración de un video o audio
-*`Posible uso`: Al continuar grabando un audio ya empezado (¿?)
+*`Posible uso`: Al continuar grabando un audio ya empezado
 
 ##ontimeupdate
 *`Objetivo`: Ocurre cuando cambia el tiempo de reproducción de un video o audio
