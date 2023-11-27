@@ -1,13 +1,3 @@
-//import { recordFn } from "/js/recordButton.js";
-
-//const liRecordButton = document.getElementById("recordbtn");
-//liRecordButton.innerHTML = recordFn();
-
-//let audioChunks = [];
-//let mediaRecorder;
-
-
-//import {v4 as uuidv4} from "./public/utils/uuid/v4.js";S
 
 const create_button = (id) => {
   const button = document.createElement('button')
@@ -32,7 +22,6 @@ class App {
     async init(){
       // Permissions to record audio 
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      //this.recordLogic(stream)
       this.initRecord(stream);
       this.initAudio();
       document.getElementById('uploadbtn').addEventListener('click', () => {
@@ -40,15 +29,6 @@ class App {
         this.initUpload();
       }
       );
-    }
-
-  
-    
-    recordLogic( stream ) {
-       const record_button = document.getElementById('recordbtn')
-       record_button.addEventListener('click', () => {
-          this.initRecord(stream)
-       })
     }
 
     initButtons(){
@@ -159,10 +139,6 @@ class App {
         }
       }
     }
-      /*else if(this.mediaRecorder.state=='playing') {
-        document.getElementById('playbtn').textContent="Stop audio"
-        this.setState(this.audio.ontimeupdate);
-      }*/
     
     
     record(){
@@ -311,11 +287,3 @@ class App {
 const myApp = new App();
 
 myApp.init();
-
-
-//document.getElementById('recordbtn').addEventListener('click', () =>myApp.record());
-      
-//document.getElementById('stop-btn').addEventListener('click', () => myApp.stopRecording());
-
-//document.getElementById('playbtn').addEventListener('click', () => myApp.playAudio());
-//document.getElementById('recor')
