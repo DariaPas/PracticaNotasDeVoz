@@ -24,11 +24,32 @@ class App {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       this.initRecord(stream);
       this.initAudio();
+
+      const playMode = new URLSearchParams(window.location.search).get("play");
+      if (playMode) {
+        // If playMode is not empty, initiate actions to play the audio file
+        this.fetchAndPlayAudio(playMode);
+      }
+
+
       document.getElementById('uploadbtn').addEventListener('click', () => {
         console.log("upload1");
         this.initUpload();
       }
       );
+    }
+
+    async fetchAndPlayAudio(playMode) {
+      // Fetch the audio file using the identified playMode
+      const response = await fetch("api/play/" + playMode);
+      
+      if (response.ok) {
+        const audioBlob = await response.blob();
+        this.loadBlob(audioBlob);
+        this.playAudio();
+      } else {
+        console.error("Failed to fetch audio file.");
+      }
     }
 
     initButtons(){
