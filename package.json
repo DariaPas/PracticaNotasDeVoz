@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "express-session": "^1.17.3",
     "mongodb": "^6.3.0",
     "mongojs": "^3.1.0"
   }

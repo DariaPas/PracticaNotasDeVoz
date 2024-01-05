@@ -1,13 +1,18 @@
 var express = require('express');
 var router = express.Router();
 
+const {MongoClient} = require("mongodb");
+
+const connection_string = 'mongodb://127.0.0.1:27017/'
+const client = new MongoClient(connection_string)
+
+
 // /* GET home page. */
 // router.get('/', function(req, res, next) {
 //   res.render('index', { title: 'Express' });
 // });
 
 
-/////
 var session = require('express-session');
 // const MongoStore = require('connect-mongo')(session);
 
@@ -28,9 +33,32 @@ router.get('/',(req,res) => {
   res.render('index', { title : 'title'});
 });
 
-router.post('/login',(req,res) => {
+router.get('/login', (req, res) => {
+  res.render('login', {title: 'Hello world'})
+})
+
+
+router.post('/login',  async (req,res) => {
+
   req.session.email = req.body.email;
-  res.end('done');
+  req.session.password = req.body.password 
+
+  try {
+    conn = await client.connect();
+  } catch(e) {
+     console.error(e);
+  }
+
+  let db = conn.db("grabaciones");
+
+  let collection = await db.collection("user");
+  let user = await collection.find({email: req.body.email}).toArray()
+
+  if(JSON.stringify(user) == '[]') res.end(JSON.stringify({status: false, msg: 'The user you are trying to get loged in does not exist'}))
+  if(user[0].password != req.body.password) res.end(JSON.stringify({status: false, msg: 'The password does not match'})) 
+
+
+  res.end(JSON.stringify({status: true, msg: 'OK'}));
 });
 
 router.get('/admin',(req,res) => {
