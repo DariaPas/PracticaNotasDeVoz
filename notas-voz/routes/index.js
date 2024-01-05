@@ -59,7 +59,8 @@ router.post('/login',  async (req,res) => {
 
 
   res.end(JSON.stringify({status: true, msg: 'OK'}));
-});
+})
+
 
 router.get('/admin',(req,res) => {
   if(req.session.email) {
@@ -80,6 +81,79 @@ router.get('/logout',(req,res) => {
     res.redirect('/');
   });
 
-});/////
+});
+
+
+// ------------------------------------
+//       Mongo DB Voice Message Logic
+// ------------------------------------
+
+
+router.get('/api/list/:id', async (req, res) => {  
+  const user_id = req.params.id
+  console.log('user_id', user_id)
+  const file_list = await handel_list(user_id)
+
+  file_list.forEach(file => {
+    res.write('<h1>' + file.filename + '.</h1>');
+  })
+})
+
+const handel_list = async (id) => {
+  let list = []
+
+  try {
+    conn = await client.connect();
+  } catch(e) {
+     console.error(e);
+  }
+
+  let db = conn.db("grabaciones")
+
+  let collection = await db.collection("files");
+  const item_list = await collection.find({}).toArray()
+
+  list = item_list.filter(item => item.id === id)
+
+  const compareByTimestamp = (a, b) => a.date - b.date;
+
+  list = list.sort(compareByTimestamp)
+
+  return list
+} 
+
+router.get('/api/play/:filename', async (req, res, next) => {
+  const file_name = req.params.filename 
+
+  try {
+    conn = await client.connect();
+  } catch(e) {
+     console.error(e);
+  }
+
+  let db = conn.db("grabaciones")
+
+  let collection = await db.collection("files");
+  const searching_file = await collection.find({filename: file_name}).toArray()
+
+  if(JSON.stringify(searching_file) == '[]') res.status(404).end('Filename not found')
+
+  const file = searching_file.pop() 
+
+  console.log(file.file)
+
+  // Update to current date
+
+  const current_date = new Date().getTime()
+  const modification_count = collection.updateOne( { filename: file_name }, { $set: { date: current_date } })
+
+  res.render('play_audio', {audio_src: file.file })
+
+  if(modification_count <= 0) res.end('<h1> Unsucseffully updated date </h1>')
+  else console.log('Load files')
+  
+
+
+})
 
 module.exports = router;

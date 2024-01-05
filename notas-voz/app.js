@@ -31,21 +31,21 @@ app.use('/users', usersRouter);
 
 
 // Define a new route handler for /api/list/:id
-app.get('/api/list/:id', async (req, res, next) => {
-  try {
-    // Extract the user ID from the request parameters
-    const userId = req.params.id;
+// app.get('/api/list/:id', async (req, res, next) => {
+//   try {
+//     // Extract the user ID from the request parameters
+//     const userId = req.params.id;
 
-    // Call the handleList function to get the JSON response
-    const jsonResponse = await handleList(userId);
+//     // Call the handleList function to get the JSON response
+//     const jsonResponse = await handleList(userId);
 
-    // Send the JSON response
-    res.json(jsonResponse);
-  } catch (error) {
-    // Forward the error to the error handler
-    next(error);
-  }
-});
+//     // Send the JSON response
+//     res.json(jsonResponse);
+//   } catch (error) {
+//     // Forward the error to the error handler
+//     next(error);
+//   }
+// });
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
