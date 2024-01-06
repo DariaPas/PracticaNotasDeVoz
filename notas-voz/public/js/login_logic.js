@@ -18,7 +18,8 @@ submit_button.addEventListener('click', async () => {
     const resp = await fetch('/login', {method: 'POST', headers: {'Content-type': 'application/json'},  body: JSON.stringify(body_json)})
     const data = await resp.json()
 
+    localStorage.setItem( 'username', data.username )
+
     if(data.status) window.location.href = '/'
     else alert(data.msg)
-
 })

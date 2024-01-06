@@ -6,25 +6,75 @@
     <title>Play audio</title>
 
     <style>
+        body * {
+            list-style-type: none;
+        }
+
         body {
             display: flex;
             justify-content: center;
+            background-color: gray;
             align-items: center;
-            background: gray;
+            padding: 50px;
+            font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
         }
 
-        .audio_recorder {
-            width: 200px;
-            height: 500px;
+        .container{
             display: flex;
+            flex-direction: column;
+            padding: 20px;
             justify-content: center;
             align-items: center;
+            background: white;
+        }
+
+        .audio-container{
+            display: flex;
+            gap: 5px;
+        }
+        
+        .button-play:hover
+        {
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
-    <div class="audio_recorder">
-        <audio src="<%= audio_src %>">
+
+    <div class="container">
+        <div>
+            <h1> Notas de voz </h1>
+        </div>
+        <hr>
+        <div class="audio-container">
+            
+            <button class="button-play" style="display: flex; justify-content: center; align-items: center; background: none; outline: none; border: none;" id="playbutton">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-caret-right" width="15" height="15" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="#000" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                <path d="M10 18l6 -6l-6 -6v12" />
+              </svg>
+            </button>
+            <p> escuchar </p>
+            <audio  id="audioPlayer" src="<%= audio_src %>">
+        </div>
+        <hr>
+        <div>
+            <h1> Sistemas Web (2023-2024) </h1>
+        </div>
     </div>
+
+
+    <script>
+
+        const audio_player = document.getElementById('audioPlayer')
+        const play_button = document.getElementById('playbutton')
+
+        let is_playing = false
+
+        play_button.addEventListener('click', () => {
+            audio_player.play()
+        })
+
+    </script>
 </body>
 </html>

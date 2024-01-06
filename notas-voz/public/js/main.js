@@ -8,6 +8,9 @@ const create_button = (id) => {
   container.appendChild(button)
 }
 
+
+fetch('/api/clean_up/' + localStorage.getItem('username'))
+
 class App {
 
 
@@ -182,92 +185,97 @@ class App {
     playAudio(){
       this.audio.play();
       this.setState('playing');
+
+      const upload_button = document.getElementById('uploadbtn')
+      upload_button.setAttribute('disabled', true)
+
      document.getElementById('playbtn').textContent="Stop audio"
     }
     
     stopAudio(){
       this.audio.pause();
+
+      
+      const upload_button = document.getElementById('uploadbtn')
+      upload_button.setAttribute('disabled', false)
+
       document.getElementById('playbtn').textContent="Play audio"
     }
 
 
-    initUpload() {
+    async initUpload() {
       
-      
-        fetch('api/list')
-        .then(response => response.json())
-        .then(data => {
-          console.log('Data from server:', data);
+        // --------------------
+        // Mongo Upload Logic
+        // --------------------
 
-          let filesContainer = document.getElementById('fileListContainer');
-          //filesContainer.innerHTML = '';
+        const audio_recorder = document.getElementById('audioPlayer')
+        const audio_src = audio_recorder.getAttribute('src')
+        const sending_body = {src: audio_src}
 
-                // Iterate over the files and create HTML elements for each file
-                data.files.forEach(file => {
-                  console.log(file);
+        const user_name = localStorage.getItem('username')
 
-                  moment.locale('es');
-                  let date = moment(file.date).calendar().toLocaleLowerCase()
+        const resp = await fetch('/api/upload/' + user_name, {
+          method: 'POST', 
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(sending_body)
+        })
 
-                    const listItem = document.createElement('li');
-                    listItem.innerHTML = `
-                                      <div class="CopyButtonContainer">
-                                          <span class="copyButton">
-                                          <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copy" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg>
-                                          </span>
-                                          <p>Date: ${date}</p>
-                                          <span class="deleteButton">
-                                          <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
-                                          </span>
-                                      </div>`;
-                    filesContainer.appendChild(listItem);
+        const is_ok = await resp.json() 
 
-                    // Add a click event listener to the 'copy' button
-                    const copyButton = listItem.querySelector('.copyButton');
-                    copyButton.addEventListener('click', () => {
-                      const link = `/play/${file.filename}`;
-                      navigator.clipboard.writeText(file.filename)
+        if(is_ok.status) alert('Everything allright')
+        else alert('Something went wrong')
+        
+        let filesContainer = document.getElementById('fileListContainer');
+        
+        moment.locale('es');
+        let date = moment(new Date().getTime().date).calendar().toLocaleLowerCase()
+
+        const new_item_HTML = `
+                                       <div class="CopyButtonContainer">
+                                           <span class="copyButton">
+                                           <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copy" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" /><path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" /></svg>
+                                           </span>
+                                           <p>Date: ${date}</p>
+                                           <span class="deleteButton" file_name=${is_ok.filename}>
+                                           <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+                                           </span>
+                                       </div>`
+
+        const new_item = document.createElement('div')
+        new_item.innerHTML = new_item_HTML
+
+        filesContainer.appendChild(new_item)
+
+        const copyButton = new_item.querySelector('.copyButton');
+        copyButton.addEventListener('click', () => {
+                      const link = is_ok.filename
+                      navigator.clipboard.writeText(is_ok.filename)
                       .then(() => {
-                          console.log('Text copied to clipboard:', file.filename);
+                          console.log('Text copied to clipboard:', is_ok.filename);
                           // alert('Filename copied to clipboard: ' + file.filename);
                           Snackbar.show({pos: 'bottom-left', text: 'URL copied'});
                       })
                       .catch(err => {
                           console.error('Unable to copy text to clipboard:', err);
                       });
+          });
 
-                    });
+          const deleteButton = new_item.querySelector('.deleteButton');
+          deleteButton.addEventListener('click', async () => {
+            const user_name = localStorage.getItem('username')
+            const file_name = deleteButton.getAttribute('file_name')
 
+            const resp = await fetch('/api/delete/' + user_name + '/' + file_name, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({})})
+            const data = await resp.json()
 
-                    const deleteButton = listItem.querySelector('.deleteButton');
-                    deleteButton.addEventListener('click', () => {
-                    // Llamar al endpoint para borrar el archivo
-                    const uuid = this.uuid; // Reemplaza con tu lógica para obtener el uuid
-                    const filename = file.filename;
+            if(data.status) alert('Deleted correctly')
+            else alert('Somethign went wrong when deleting')
 
-                    fetch(`/api/delete/${uuid}/${filename}`, {
-                      method: 'DELETE'
-                    })
-                    .then(response => response.json())
-                    .then(result => {
-                    console.log('Archivo borrado con éxito:', result);
-                    // Puedes actualizar la lista de archivos después de borrar
-                    })
-                  .catch(error => {
-                    console.error('Error al borrar el archivo:', error);
-                  });
-                });
-              });
+            const parent = deleteButton.parentNode.remove() 
+          })
 
-         
-
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-          
-       
-      
+    
       
     }
 
