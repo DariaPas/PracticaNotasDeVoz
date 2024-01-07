@@ -71,7 +71,7 @@ router.get('/admin',(req,res) => {
   }
   else {
     res.write('<h1>Please login first.</h1>');
-    res.end('<a href='+'/'+'>Login</a>');
+    res.end('<a href='+'/login'+'>Login</a>');
   }
 });
 
